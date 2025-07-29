@@ -51,6 +51,9 @@ async function startGame() {
 
 	let paused = false;
 
+	const pauseButton = document.getElementById("game-button-pause");
+	pauseButton.addEventListener("click", () => { paused = !paused; });
+
 	function render() {
 		const buffer = w.instance.exports.memory.buffer;
 		w.instance.exports.render(heap_base);

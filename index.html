@@ -9,10 +9,14 @@
 	<body>
 		<h1>Game of Life</h1>
 		<div id="sec-game">
-			<div id="game-buttons">
+			<div id="game-controls">
 				<input type="button" id="game-button-pause" value="Pause"/>
 				<input type="button" id="game-button-step" value="Step"/>
 				<input type="button" id="game-button-randomize" value="Randomize"/>
+
+				<label for="game-slider-frame-time">delay</label>
+				<input type="range" id="game-slider-frame-time" name="game-slider-frame-time" min="0" max="300" value="10" step="10"/>
+				<label id="frame-time-number" for="game-slider-frame-time">0 ms</label>
 			</div>
 
 			<br/>

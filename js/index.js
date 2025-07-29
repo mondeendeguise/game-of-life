@@ -40,6 +40,7 @@ async function startGame() {
 	}
 
 	const ctx = app.getContext("2d");
+	ctx.imageSmoothingEnabled = false;
 
 	const w = await WebAssembly.instantiateStreaming(fetch("wasm/game.wasm"), {
 		"env": make_environment(libm),
@@ -77,6 +78,9 @@ async function startGame() {
 	const randomizeButton = document.getElementById("game-button-randomize");
 	randomizeButton.addEventListener("click", randomize);
 
+	const frameTimeSlider = document.getElementById("game-slider-frame-time");
+	const frameTimeNumber = document.getElementById("frame-time-number");
+
 	function render() {
 		const buffer = w.instance.exports.memory.buffer;
 		w.instance.exports.render(heap_base);
@@ -93,8 +97,11 @@ async function startGame() {
 
 	function loop() {
 		if(!paused) render();
-		window.requestAnimationFrame(loop);
+		frameTimeNumber.innerText = frameTimeSlider.value + " ms";
+		setTimeout(loop, frameTimeSlider.value);
+		// window.requestAnimationFrame(loop);
 	}
 
-	window.requestAnimationFrame(loop);
+	setTimeout(loop, frameTimeSlider.value);
+	// window.requestAnimationFrame(loop);
 }

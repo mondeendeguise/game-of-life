@@ -78,7 +78,7 @@ struct game_canvas randomize(void) {
 
 	for(int y = 0; y < gc.height; ++y) {
 		for(int x = 0; x < gc.width; ++x) {
-			if(random() > 0.7f) CELL_LIVE(x, y);
+			if(random() > 0.95f) CELL_LIVE(x, y);
 		}
 	}
 

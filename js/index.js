@@ -52,7 +52,30 @@ async function startGame() {
 	let paused = false;
 
 	const pauseButton = document.getElementById("game-button-pause");
-	pauseButton.addEventListener("click", () => { paused = !paused; });
+	pauseButton.addEventListener("click", () => { paused = !paused });
+
+	function step() {
+		paused = true;
+		render();
+	}
+
+	const stepButton = document.getElementById("game-button-step");
+	stepButton.addEventListener("click", step);
+
+	function randomize() {
+		const buffer = w.instance.exports.memory.buffer;
+		w.instance.exports.randomize(heap_base);
+		const canvas = readCanvasFromMemory(buffer, heap_base);
+		const image = new ImageData(new Uint8ClampedArray(buffer, canvas.cells, canvas.width * canvas.height * 4), canvas.width);
+
+		app.width = canvas.width;
+		app.height = canvas.height;
+
+		ctx.putImageData(image, 0, 0);
+	}
+
+	const randomizeButton = document.getElementById("game-button-randomize");
+	randomizeButton.addEventListener("click", randomize);
 
 	function render() {
 		const buffer = w.instance.exports.memory.buffer;

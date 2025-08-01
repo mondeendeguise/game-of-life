@@ -17,7 +17,7 @@ bool build_term(Nob_Cmd *cmd) {
 bool build_wasm(Nob_Cmd *cmd) {
 	bool result = true;
 	if(!nob_mkdir_if_not_exists("wasm")) return 1;
-	nob_cmd_append(cmd, "clang", COMMON_CFLAGS, "--target=wasm32", "-fno-builtin", "-nostdlib", "-Wl,--allow-undefined", "-Wl,--no-entry", "-Wl,--export-all", "./src/game.c", "-o", "./wasm/game.wasm");
+	nob_cmd_append(cmd, "clang", COMMON_CFLAGS, "--target=wasm32", "-fno-builtin", "-nostdlib", "-Wl,--allow-undefined", "-Wl,--no-entry", "-Wl,--export-all", "./src/game.c", "./src/prng.c", "-o", "./wasm/game.wasm");
 	if(!nob_cmd_run_sync(*cmd)) result = false;
 	cmd->count = 0;
 	return result;

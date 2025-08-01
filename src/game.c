@@ -1,9 +1,21 @@
 typedef unsigned int uint32_t;
-typedef unsigned long long int uint64_t;
 
 typedef int bool;
 #define true 1
 #define false 0
+
+#include "prng.h"
+
+#ifndef WIDTH
+#define WIDTH 640
+#endif
+
+#ifndef HEIGHT
+#define HEIGHT 480
+#endif
+
+static uint32_t cells[WIDTH*HEIGHT];
+static uint32_t framebuffer[WIDTH*HEIGHT];
 
 struct game_canvas {
 	uint32_t *cells;
@@ -24,16 +36,6 @@ void clear_canvas(struct game_canvas gc) {
 		}
 	}
 }
-
-/* example */
-
-float random(void);
-
-#define WIDTH 640
-#define HEIGHT 480
-
-static uint32_t cells[WIDTH*HEIGHT];
-static uint32_t framebuffer[WIDTH*HEIGHT];
 
 // byte order is reversed here for some reason idk
 #define ALIVE 0xFFFF0000
@@ -66,7 +68,8 @@ int get_live_neighbors(int x, int y) {
 	return total;
 }
 
-struct game_canvas randomize(void) {
+struct game_canvas randomize(unsigned int seed) {
+	srand(seed);
 	struct game_canvas gc = { cells, framebuffer, WIDTH, HEIGHT };
 
 	// clear
@@ -78,7 +81,7 @@ struct game_canvas randomize(void) {
 
 	for(int y = 0; y < gc.height; ++y) {
 		for(int x = 0; x < gc.width; ++x) {
-			if(random() > 0.95f) CELL_LIVE(x, y);
+			if(randf() > 0.95f) CELL_LIVE(x, y);
 		}
 	}
 

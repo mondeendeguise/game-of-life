@@ -11,8 +11,8 @@ function make_environment(...envs) {
 	});
 }
 
-const libm = {
-	"random": Math.random,
+const libc = {
+	// "time": () => {return Math.floor(Date.now() / 1000)},
 };
 
 let iota = 0;
@@ -43,14 +43,20 @@ async function startGame() {
 	ctx.imageSmoothingEnabled = false;
 
 	const w = await WebAssembly.instantiateStreaming(fetch("wasm/game.wasm"), {
-		"env": make_environment(libm),
+		"env": make_environment(libc),
 	});
 
 	const heap_base = w.instance.exports.__heap_base.value;
 
-	w.instance.exports.randomize(heap_base);
+	var seed = Math.floor(Date.now() / 1000);
+	w.instance.exports.randomize(heap_base, seed);
 
-	let paused = false;
+	const seedField = document.getElementById("game-field-seed");
+	seedField.value = seed;
+	const seedButton = document.getElementById("game-button-seed");
+	seedButton.addEventListener("click", useSeed);
+
+	var paused = false;
 
 	const pauseButton = document.getElementById("game-button-pause");
 	pauseButton.addEventListener("click", () => { paused = !paused });
@@ -63,9 +69,26 @@ async function startGame() {
 	const stepButton = document.getElementById("game-button-step");
 	stepButton.addEventListener("click", step);
 
-	function randomize() {
+	function useSeed() {
+		seed = seedField.value;
+
 		const buffer = w.instance.exports.memory.buffer;
-		w.instance.exports.randomize(heap_base);
+		w.instance.exports.randomize(heap_base, seed);
+		const canvas = readCanvasFromMemory(buffer, heap_base);
+		const image = new ImageData(new Uint8ClampedArray(buffer, canvas.cells, canvas.width * canvas.height * 4), canvas.width);
+
+		app.width = canvas.width;
+		app.height = canvas.height;
+
+		ctx.putImageData(image, 0, 0);
+	}
+
+	function randomize() {
+		seed = w.instance.exports.rand();
+		seedField.value = seed;
+
+		const buffer = w.instance.exports.memory.buffer;
+		w.instance.exports.randomize(heap_base, seed);
 		const canvas = readCanvasFromMemory(buffer, heap_base);
 		const image = new ImageData(new Uint8ClampedArray(buffer, canvas.cells, canvas.width * canvas.height * 4), canvas.width);
 
